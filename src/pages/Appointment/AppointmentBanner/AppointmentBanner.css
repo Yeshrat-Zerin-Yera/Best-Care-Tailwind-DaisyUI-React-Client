@@ -1,0 +1,11 @@
+/* Style For Appointment Banner Chalender */
+.rdp {
+    --rdp-cell-size: 60px;
+    --rdp-accent-color: #19D3AE;
+}
+
+@media (max-width: 639px) {
+    .rdp {
+        --rdp-cell-size: 40px;
+    }
+}
