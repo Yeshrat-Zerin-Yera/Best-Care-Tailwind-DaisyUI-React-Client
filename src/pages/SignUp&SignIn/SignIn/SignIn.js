@@ -42,6 +42,7 @@ const SignIn = () => {
             .then(result => {
                 const user = result.user;
                 console.log(user);
+                saveUserToDB(user?.displayName, user?.email);
                 toast.success('Sign In Successfull');
                 navigate(from, { replace: true });
             })
@@ -59,6 +60,23 @@ const SignIn = () => {
                 console.error(error);
                 setSignInError(error.message);
             });
+    };
+
+    // Post User To Database
+    const saveUserToDB = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+
     };
 
     return (

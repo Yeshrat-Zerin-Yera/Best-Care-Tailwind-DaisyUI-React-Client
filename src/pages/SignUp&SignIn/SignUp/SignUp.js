@@ -29,7 +29,9 @@ const SignUp = () => {
                     displayName: data.name
                 };
                 updateUser(userInfo)
-                    .then(() => { })
+                    .then(() => {
+                        saveUserToDB(data?.name, data?.email)
+                    })
                     .catch(error => console.error(error.message))
                 console.log(user);
                 reset();
@@ -61,10 +63,28 @@ const SignUp = () => {
             .then(result => {
                 const user = result.user;
                 console.log(user);
+                saveUserToDB(user?.displayName, user?.email);
                 toast.success('Sign Up Successfull');
                 navigate(from, { replace: true });
             })
             .catch(error => console.error(error))
+    };
+
+    // Post User To Database
+    const saveUserToDB = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+
     };
 
     return (
