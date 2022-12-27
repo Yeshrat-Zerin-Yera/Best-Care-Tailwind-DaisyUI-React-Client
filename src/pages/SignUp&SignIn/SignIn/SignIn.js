@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
+import useTitle from '../../../hooks/useTitle';
 
 const SignIn = () => {
+    useTitle('Sign In');
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
     const { signIn, signInProvider, resetUserPassword } = useContext(AuthContext);
     const [signInError, setSignInError] = useState('');
