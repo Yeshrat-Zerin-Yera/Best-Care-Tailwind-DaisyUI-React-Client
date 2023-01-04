@@ -1,17 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 import useTitle from '../../../hooks/useTitle';
 import Loading from '../../Shared/Loading/Loading';
 
-const Dashboard = () => {
-    useTitle('Dashboard');
+const MyAppointments = () => {
+    // Use Title
+    useTitle('My Appointments');
+    // User From AuthContext
     const { user } = useContext(AuthContext);
 
     // Get Bookings By Email
     const { data: bookings = [], isLoading } = useQuery({
         queryKey: ['bookings', user?.email],
-        queryFn: () => fetch(`http://localhost:5000/bookings?email=${user?.email}`)
+        queryFn: () => fetch(`https://best-care-server.vercel.app/bookings?email=${user?.email}`, {
+            headers: {
+                authorization: `bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
             .then(res => res.json())
     });
 
@@ -39,6 +46,8 @@ const Dashboard = () => {
                             <th>Treatment</th>
                             <th>Date</th>
                             <th>Time</th>
+                            <th>Price</th>
+                            <th>Payment</th>
                         </tr>
                     </thead>
                     {/* Table Body */}
@@ -50,6 +59,15 @@ const Dashboard = () => {
                                 <td>{booking?.treatment}</td>
                                 <td>{booking?.appointmentDate}</td>
                                 <td>{booking?.slot}</td>
+                                <td>{booking?.price}$</td>
+                                <td>
+                                    {
+                                        booking?.price && !booking?.paid && <Link to={`/dashboard/payment/${booking?._id}`} className='btn btn-primary btn-sm text-white'>Pay</Link>
+                                    }
+                                    {
+                                        booking?.price && booking.paid && <span className='text-primary'>Paid</span>
+                                    }
+                                </td>
                             </tr>)
                         }
                     </tbody>
@@ -59,4 +77,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default MyAppointments;

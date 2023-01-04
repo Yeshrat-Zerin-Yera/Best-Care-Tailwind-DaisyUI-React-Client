@@ -13,7 +13,7 @@ const AvailableAppointments = ({ selectedDate }) => {
     // Fetch Appointment Options
     const { data: appointmentOptions = [], isLoading, refetch } = useQuery({
         queryKey: ['appointmentOptions', date],
-        queryFn: () => fetch(`http://localhost:5000/appointmentOptions?date=${date}`)
+        queryFn: () => fetch(`https://best-care-server.vercel.app/appointmentOptions?date=${date}`)
             .then(res => res.json())
     });
 

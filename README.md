@@ -18,11 +18,11 @@ Github client side public repository link: [https://github.com/Yeshrat-Zerin-Yer
 
 ### ⛅️Livesite Link Of Server Side
 
-Firebase livesite link: [https://xplore-tailwind-react-server.vercel.app](https://xplore-tailwind-react-server.vercel.app)
+Firebase livesite link: [https://best-care-server.vercel.app](https://best-care-server.vercel.app)
 
 ### 💻Livesite Link Of Client Side
 
-Firebase livesite link: [https://xplore-tailwind-react-client.web.app](https://xplore-tailwind-react-client.web.app)
+Firebase livesite link: [https://best-care-58ee6.web.app/](https://best-care-58ee6.web.app/)
 
 
 ## Features

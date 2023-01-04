@@ -5,20 +5,33 @@ import { toast } from 'react-hot-toast';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 import useTitle from '../../../hooks/useTitle';
+import useToken from '../../../hooks/useToken';
 
 const SignIn = () => {
+    // Title
     useTitle('Sign In');
+    // Use Form
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
+    // Sign In
     const { signIn, signInProvider, resetUserPassword } = useContext(AuthContext);
     const [signInError, setSignInError] = useState('');
     const googleProvider = new GoogleAuthProvider();
+    // Navigate
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
+    const [signInUserEmail, setSignInUserEmail] = useState('');
+    // Token
+    const [token] = useToken(signInUserEmail);
+
+    if (token) {
+        navigate(from, { replace: true });
+    }
 
     // Handle Sign In
     const handleSignIn = data => {
         setSignInError('');
+        setSignInUserEmail('');
         console.log(data);
         signIn(data.email, data.password)
             .then(result => {
@@ -26,8 +39,8 @@ const SignIn = () => {
                 console.log(user);
                 reset();
                 if (user.emailVerified) {
+                    setSignInUserEmail(user?.email);
                     toast.success('Sign In Successfull');
-                    navigate(from, { replace: true });
                 }
             })
             .catch(error => {
@@ -38,13 +51,13 @@ const SignIn = () => {
 
     // Handle Other Sign In
     const handleOtherSignIn = provider => {
+        setSignInUserEmail('');
         signInProvider(provider)
             .then(result => {
                 const user = result.user;
                 console.log(user);
-                saveUserToDB(user?.displayName, user?.email);
+                saveUserToDB(user?.displayName, user?.email, user?.photoURL);
                 toast.success('Sign In Successfull');
-                navigate(from, { replace: true });
             })
             .catch(error => console.error(error))
     };
@@ -63,9 +76,9 @@ const SignIn = () => {
     };
 
     // Post User To Database
-    const saveUserToDB = (name, email) => {
-        const user = { name, email };
-        fetch('http://localhost:5000/users', {
+    const saveUserToDB = (name, email, photoURL) => {
+        const user = { name, email, photoURL };
+        fetch('https://best-care-server.vercel.app/users', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -75,6 +88,7 @@ const SignIn = () => {
             .then(res => res.json())
             .then(data => {
                 console.log(data);
+                setSignInUserEmail(email);
             })
 
     };

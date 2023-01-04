@@ -5,7 +5,7 @@ import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 
 const AppointmentModal = ({ service, selectedDate, setService, refetch }) => {
     // { service, selectedDate, setService, refetch } From Available Appointments
-    const { name, slots } = service;
+    const { name, slots, price } = service;
     const { user } = useContext(AuthContext);
 
     // Handle Booking
@@ -22,12 +22,13 @@ const AppointmentModal = ({ service, selectedDate, setService, refetch }) => {
             treatment: name,
             patient: fullName,
             slot,
+            price,
             email,
             phoneNumber
         }
         // If User Present Then POST Booking Data To Database
         if (user?.uid) {
-            fetch('http://localhost:5000/bookings', {
+            fetch('https://best-care-server.vercel.app/bookings', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'

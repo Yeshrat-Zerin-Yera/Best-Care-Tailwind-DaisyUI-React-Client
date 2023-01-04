@@ -2,25 +2,37 @@ import { GoogleAuthProvider } from 'firebase/auth';
 import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 import useTitle from '../../../hooks/useTitle';
+import useToken from '../../../hooks/useToken';
 
 const SignUp = () => {
+    // Use Title
     useTitle('Sign Up');
+    // Use Form
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    // Use Context
     const { createUser, updateUser, emailVerification, signInProvider } = useContext(AuthContext);
+    // Sign Up
     const [signUpError, setSignUpError] = useState('');
     const googleProvider = new GoogleAuthProvider();
+    // Navigate
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || '/';
+    // Token
+    const [signUpUserEmail, setSignUpUserEmail] = useState('');
+    const [token] = useToken(signUpUserEmail);
+
+    if (token) {
+        navigate('/');
+    }
 
     // Handle Sign Up
     const handleSignUp = data => {
         setSignUpError('');
+        setSignUpUserEmail('');
         console.log(data);
-        createUser(data.email, data.password)
+        createUser(data?.email, data?.password)
             .then(result => {
                 const user = result.user;
                 console.log(user);
@@ -30,17 +42,13 @@ const SignUp = () => {
                 };
                 updateUser(userInfo)
                     .then(() => {
-                        saveUserToDB(data?.name, data?.email)
+                        saveUserToDB(data?.name, data?.email, data?.photoURL)
                     })
                     .catch(error => console.error(error.message))
-                console.log(user);
+                // Reset Form
                 reset();
                 // Email Verification
                 handleEmailVerification();
-                if (user.emailVerified) {
-                    toast.success('Sign Up Successfull');
-                    navigate(from, { replace: true });
-                }
             })
             .catch(error => {
                 console.error(error);
@@ -55,25 +63,25 @@ const SignUp = () => {
                 toast.success('Verification Email Sent');
             })
             .catch(error => console.error(error))
-    }
+    };
 
     // Handle Other Sign Up
     const handleOtherSignUp = provider => {
+        setSignUpUserEmail('');
         signInProvider(provider)
             .then(result => {
                 const user = result.user;
                 console.log(user);
-                saveUserToDB(user?.displayName, user?.email);
+                saveUserToDB(user?.displayName, user?.email, user?.photoURL);
                 toast.success('Sign Up Successfull');
-                navigate(from, { replace: true });
             })
             .catch(error => console.error(error))
     };
 
     // Post User To Database
-    const saveUserToDB = (name, email) => {
-        const user = { name, email };
-        fetch('http://localhost:5000/users', {
+    const saveUserToDB = (name, email, photoURL) => {
+        const user = { name, email, photoURL };
+        fetch('https://best-care-server.vercel.app/users', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -83,6 +91,7 @@ const SignUp = () => {
             .then(res => res.json())
             .then(data => {
                 console.log(data);
+                setSignUpUserEmail(email);
             })
 
     };
